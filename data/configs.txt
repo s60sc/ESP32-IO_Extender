@@ -1,13 +1,6 @@
 ST_SSID:null
-ftp_port:21
-ftp_server:null
-ftp_user:null
-ftp_wd:null
-smtp_port:465
-smtp_server:smtp.gmail.com
-smtp_login:null
-smtp_email:null
+Auth_User:null
 hostName:null
-logMode:0
+logMode:1
 timezone:GMT0BST,M3.5.0/1,M10.5.0
 restart:null
