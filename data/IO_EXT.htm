@@ -19,16 +19,15 @@
         padding: 8px;
       } 
     </STYLE>
-    <script src="/web?jquery.min.js"></script>
   </head>
   <body>
     <h3>Control & Monitor</h3>
     <table id="button-group">
-      <tr><td><button id="log" class="web-action" value="WSL.htm">Monitor Log</button></td></tr>
-      <tr><td><button id="cfg" class="web-action" value="configs.txt">View Config</button></td></tr>
-      <tr><td><button id="ota" class="web-action" value="OTA.htm">OTA Update</button></td></tr>
-      <tr><td><button id="reset" class="control-action" value="1">Reboot ESP</button></td></tr>
-      <tr><td><button id="deldata" class="control-action" value="1">Delete /data</button></td></tr>
+      <tr><td><a href="/web?WSL.htm"><button>Monitor Log</button></a></td></tr>
+      <tr><td><a href="/web?configs.txt"><button>View Config</button></a></td></tr>
+      <tr><td><a href="/web?OTA.htm"><button>OTA Update</button></a></td></tr>
+      <tr><td><a href="/control?reset=1"><button>Reboot ESP</button></a></td></tr>
+      <tr><td><a href="/control?deldata=1"><button>Delete /data</button></a></td></tr>
     </table>
     <script src="/web?common.js"></script>
   </body>
