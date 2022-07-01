@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>IO_Extender</title>
+    <STYLE type="text/css">
+      body {
+        margin: 10px;
+      }
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 90%;
+      }
+      td, th {
+        border: 0px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      } 
+    </STYLE>
+  </head>
+  <body>
+    <h3>Control & Monitor</h3>
+    <table id="button-group">
+      <tr>
+      <td><a href="/web?WSL.htm"><button>Monitor Log</button></a></td>
+      <td><a href="/web?configs.txt"><button>View Config</button></a></td>
+      <td><a href="/web?OTA.htm"><button>OTA Update</button></a></td>
+      <td><a href="/control?reset=1"><button>Reboot ESP</button></a></td>
+      <td><a href="/control?deldata=1"><button>Delete /data</button></a></td>
+      </tr>
+    </table>
+    </br>
+    <form onsubmit="return sendCmd()">
+      <input style="width:90%;" placeholder="Enter command for device and press return" id='txtCmd'/> 
+    </form>
+    <pre id='log' style="height:90%;width:90%;border:5px solid #ccc;font:16px Arial;overflow:auto;"></pre>
+  </body>
+</html>
