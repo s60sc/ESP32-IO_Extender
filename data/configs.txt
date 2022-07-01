@@ -1,6 +1,6 @@
 ST_SSID:null
 Auth_User:null
 hostName:null
-logMode:1
+logMode:2
 timezone:GMT0BST,M3.5.0/1,M10.5.0
 restart:null
