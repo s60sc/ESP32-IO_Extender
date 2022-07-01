@@ -1,0 +1,34 @@
+
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>IO_Extender</title>
+    <STYLE type="text/css">
+      body {
+        margin: 10px;
+      }
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 90%;
+      }
+      td, th {
+        border: 0px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      } 
+    </STYLE>
+  </head>
+  <body>
+    <h3>Control & Monitor</h3>
+    <table id="button-group">
+      <tr><td><button id="log" class="web-action" value="WSL.htm">Monitor Log</button></td></tr>
+      <tr><td><button id="cfg" class="web-action" value="configs.txt">View Config</button></td></tr>
+      <tr><td><button id="ota" class="web-action" value="OTA.htm">OTA Update</button></td></tr>
+      <tr><td><button id="reset" class="control-action" value="1">Reboot ESP</button></td></tr>
+      <tr><td><button id="deldata" class="control-action" value="1">Delete /data</button></td></tr>
+    </table>
+    <script src="/web?common.js"></script>
+  </body>
+</html>
