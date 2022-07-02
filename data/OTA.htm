@@ -35,12 +35,12 @@
         _("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
         var percent = (event.loaded / event.total) * 100;
         _("progressBar").value = Math.round(percent);
-        _("status").innerHTML = Math.round(percent) + "% uploaded...";
+        _("status").innerHTML = Math.round(percent) + "% uploading";
+        if (event.loaded  == event.total) _("status").innerHTML = 'Uploaded, wait for completion result';
       }
 
       function completeHandler(event) {
         _("status").innerHTML = event.target.responseText;
-        _("progressBar").value = 0; //wil clear progress bar after successful upload
       }
 
       function errorHandler(event) {
