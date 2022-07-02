@@ -1,5 +1,4 @@
 
-<script src='/web?jquery.min.js'></script>
 <form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>
   <input type='file' name='update'>
   <input type='submit' value='Upload'>
@@ -8,11 +7,11 @@
 <script>
   var baseHost = document.location.origin
   var otaUrl = baseHost + ':82/upload'
-  $('form').submit(function(e){
+  document.querySelector('form').submit(function(e){
   e.preventDefault();
-  var form = $('#upload_form')[0];
+  var form = document.querySelector('#upload_form')[0];
   var data = new FormData(form); 
-  var filename = $('input[type=file]').val().split('\\').pop();
+  var filename = document.querySelector('input[type=file]').value.split('\\').pop();
   $.ajax({
     url: otaUrl,
     type: 'POST',
@@ -26,21 +25,20 @@
       xhr.upload.addEventListener('progress', function(evt) {
         if (evt.lengthComputable) {
           var per = evt.loaded / evt.total;
-          $('#prg').html('progress: ' + Math.round(per*100) + '%');
+          document.querySelector('#prg').html('progress: ' + Math.round(per*100) + '%');
           if (evt.loaded == evt.total) {
-            $('#prg').html('Uploaded, wait for completion result');
+            document.querySelector('#prg').html('Uploaded, wait for completion result');
           }
         }
       }, false);
       return xhr;
     },
     success: function(data,status,xhr){
-      $('#prg').html(xhr.responseText);
+      document.querySelector('#prg').html(xhr.responseText);
     },
     error: function(xhr, status, error) {
-      $('#prg').html('Error: ' + xhr.responseText);
+      document.querySelector('#prg').html('Error: ' + xhr.responseText);
     }
    });
   });
 </script>
-
