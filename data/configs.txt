@@ -1,32 +1,43 @@
-ST_SSID:null:99:na
-Auth_User:null:99:na
-hostName:null:99:na
-logMode:2:99:na
-timezone:GMT0BST,M3.5.0/1,M10.5.0:99:na
-restart:null:99:na
-
-useIOextender:0:3:Use_Another_ESP32_As_IO_Extender
-useUART0pins:0:3:Use UART0 for external pins 
-uartTxdPin:21:3:ESP32 UART0 TX0 pin
-uartRxdPin:20:3:ESP32 UART0 RX0 pin
-pirUse:1:3:Use_PIR
-lampUse:1:3:Use_Lamp
-lampAuto:1:3:Lamp_activated_by_PIR
-servoUse:1:3:Use_Servos
-micUse:0:3:Use_Microphone
+restart::99:na
+ST_SSID::0:Wifi SSID name
+ST_Pass::0:Wifi SSID password
+ST_ip::0:Static IP address
+ST_gw::0:Router IP address
+ST_sn:255.255.255.0:0:Router subnet
+ST_ns1::0:DNS server
+ST_ns2::0:Alt DNS server
+AP_Pass:123456789:0:AP password
+AP_ip::0:AP IP Address if not 192.168.4.1
+AP_sn::0:AP subnet
+AP_gw::0:AP gateway
+allowAP:1:0:Allow AP Fallback if no router (0/1)
+Auth_User::0:Optional user name for web page login
+Auth_Pass::0:Optional password for web page login
+hostName::0:Device host name
+wifiTimeoutSecs:30:0:WiFi connect timeout (secs)
+useIOextender:0:3:Use another ESP as IO Extender (0/1)
+useUART0:0:99:na
+uartTxdPin::3:UART1 TX pin
+uartRxdPin::3:UART1 RX pin
+pirUse:0:3:Use PIR for detection (0/1)
+lampUse:0:3:Use lamp (0/1)
+lampAuto:0:3:Lamp activated by PIR (0/1)
+servoUse:0:3:Use servos (0/1)
+micUse:0:3:Use microphone (0/1)
 pirPin::3:Pin used for PIR
 lampPin::3:Pin used for Lamp
-servoPanPin:1:3:Pin used for Pan Servo
-servoTiltPin:2:3:Pin used for Tilt Servo
-ds18b20Pin:7:3:Pin used for DS18B20 temperature sensor
-battPin::3:Pin used for battery voltage monitoring
+servoPanPin::3:Pin used for Pan Servo
+servoTiltPin::3:Pin used for Tilt Servo
+ds18b20Pin::3:Pin used for DS18B20 temperature sensor
+voltPin::3:Pin used for battery voltage monitoring
 micSckPin::3:Pin used for I2S microphone SCK 
 micWsPin::3:Pin used for I2S microphone WS
 micSdPin::3:Pin used for I2S microphone SD
+servoDelay:0:3:Delay between each 1 degree change (ms) 
 servoMinAngle:0:3:Set min angle for servo model
 servoMaxAngle:180:3:Set max angle for servo model
-servoMinPulseWidth:544:3:Set min pulse width for servo model
-servoMaxPulseWidth:2400:3:Set max pulse width for servo model
-battVoltageDivider:2:3:Voltage divider resistor ratio
-battLowVoltage:3:3:Warning level for low voltage
-battInterval:5:3: Voltage check interval in secs
+servoMinPulseWidth:544:3:Set min pulse width for servo model (usecs)
+servoMaxPulseWidth:2400:3:Set max pulse width for servo model (usecs)
+voltDivider:2:3:Voltage divider resistor ratio
+voltLow:3:3:Warning level for low voltage
+voltInterval:5:3: Voltage check interval (secs)
