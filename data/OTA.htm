@@ -1,5 +1,5 @@
 <html>
-  <!-- modified from https://codepen.io/PerfectIsShit/pen/zogMXP-->
+  <head>
   </head>
   <body>
     <br></br>
@@ -32,10 +32,10 @@
       }
 
       function progressHandler(event) {
-        _("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
+        _("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " of " + event.total + " bytes";
         var percent = (event.loaded / event.total) * 100;
         _("progressBar").value = Math.round(percent);
-        _("status").innerHTML = Math.round(percent) + "% uploading";
+        _("status").innerHTML = Math.round(percent) + "% transferred";
         if (event.loaded  == event.total) _("status").innerHTML = 'Uploaded, wait for completion result';
       }
 
