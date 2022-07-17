@@ -15,7 +15,6 @@ Auth_User::0:Optional user name for web page login
 Auth_Pass::0:Optional password for web page login
 hostName::0:Device host name
 wifiTimeoutSecs:30:0:WiFi connect timeout (secs)
-useIOextender:0:99:na
 useUART0:0:99:na
 uartTxdPin::3:UART1 TX pin
 uartRxdPin::3:UART1 RX pin
