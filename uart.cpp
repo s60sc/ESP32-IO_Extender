@@ -1,12 +1,12 @@
 
 // Use Uart interface to communicate between client ESP and IO extender ESP
 // to allow IO extender to provide additional pins to client
-// to support peripherals defined in peripherals.h
+// to support peripherals defined in peripherals.cpp
 //
 // Connect extender UART_TXD_PIN pin to client UART_RXD_PIN pin
 // Connect extender UART_RXD_PIN pin to client UART_TXD_PIN pin
 // Also connect a common GND
-// The UART id and pins used are defined in myConfig.h
+// The UART id and pins used are defined using the web page
 // If UART0 is used, the Arduino serial monitor is not available
 // use the web monitor instead.
 //
