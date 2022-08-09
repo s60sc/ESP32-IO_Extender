@@ -32,7 +32,7 @@
 #define ONEMEG (1024 * 1024)
 #define MAX_PWD_LEN 64
 #define JSON_BUFF_LEN (1024) 
-#define GITHUB_URL "https://raw.githubusercontent.com/s60sc/ESP32-IO_Extender/master"
+#define GITHUB_URL "https://raw.githubusercontent.com/s60sc/ESP32-IO_Extender/main"
 
 #define FILLSTAR "****************************************************************"
 #define STORAGE SPIFFS // use of SPIFFS or SD_MMC
