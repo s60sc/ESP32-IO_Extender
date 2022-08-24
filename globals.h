@@ -3,12 +3,18 @@
 // s60sc 2022
 
 #pragma once
+// to compile with -Wall -Werror=all -Wextra
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+//#pragma GCC diagnostic ignored "-Wunused-variable"
 
 /******************** User modifiable defines *******************/
 
-//#define USE_LOG_COLORS  // uncomment to colorise log messages (eg if using idf.py, but not arduino)
+
 
 #define ALLOW_SPACES false // set set true to allow whitespace in configs.txt key values
+
+//#define USE_LOG_COLORS  // uncomment to colorise log messages (eg if using idf.py, but not arduino)
 
 #define IS_ESP32_C3 // uncomment if ESP32-C3 is being used
 
@@ -17,7 +23,7 @@
 /********************* fixed defines leave as is *******************/ 
  
 #define APP_NAME "ESP_IO_Extender" // max 15 chars
-#define APP_VER "1.0"
+#define APP_VER "1.1"
 
 #define DATA_DIR "/data"
 #define HTML_EXT ".htm"
@@ -25,9 +31,9 @@
 #define JS_EXT ".js"
 #define CSS_EXT ".css"
 #define ICO_EXT ".ico"
+#define SVG_EXT ".svg"
 #define INDEX_PAGE_PATH DATA_DIR "/IO_EXT" HTML_EXT
 #define CONFIG_FILE_PATH DATA_DIR "/configs" TEXT_EXT
-#define LOG_FILE_PATH DATA_DIR "/log" TEXT_EXT
 #define FILE_NAME_LEN 64
 #define ONEMEG (1024 * 1024)
 #define MAX_PWD_LEN 64
@@ -35,22 +41,23 @@
 #define GITHUB_URL "https://raw.githubusercontent.com/s60sc/ESP32-IO_Extender/main"
 
 #define FILLSTAR "****************************************************************"
+#define DELIM ':'
 #define STORAGE SPIFFS // use of SPIFFS or SD_MMC
 #define RAMSIZE (1024 * 8) 
 #define CHUNKSIZE (1024 * 4)
 #define FLUSH_DELAY 0 // for debugging crashes
 #define MAX_CONFIGS 100
+//#define INCLUDE_FTP 
+//#define INCLUDE_SMTP
+//#define INCLUDE_SD
 //#define DEV_ONLY // leave commented out
+#define STATIC_IP_OCTAL "160" // dev only
 
 #define IS_IO_EXTENDER true // must be true for IO_Extender
 #define EXTPIN 100
 
-// which web assets to download
-#define USE_LOG false
-#define USE_WSL true
+// which optional web assets to download
 #define USE_JQUERY false
-#define USE_COMMON false
-#define USE_CONFIG true
 
 /******************** Libraries *******************/
 
@@ -59,7 +66,7 @@
 #include "esp_http_server.h"
 #include <ESPmDNS.h> 
 #include "lwip/sockets.h"
-#include <map>
+#include <vector>
 #include "ping/ping_sock.h"
 #include <Preferences.h>
 #include <regex>
@@ -81,9 +88,9 @@ float readDS18B20temp(bool isCelsius);
 void setCamPan(int panVal);
 void setCamTilt(int tiltVal);
 void setLamp(bool lampVal);
-uint32_t usePeripheral(byte pinNum, uint32_t receivedData);
 
 // global general utility functions in utils.cpp / utilsSD.cpp / peripherals.cpp
+void appDataFiles();    
 void buildAppJsonString(bool filter);
 void buildJsonString(uint8_t filter);
 bool checkDataFiles();
@@ -108,30 +115,32 @@ void listBuff(const uint8_t* b, size_t len);
 bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* extension);
 bool loadConfig();
 void logPrint(const char *fmtStr, ...);
+void logSetup();
 void OTAprereq();
 void prepPeripherals();
-bool prepSD_MMC();
 void prepSMTP();
 void prepUart();
-void processAppWSmsg(uint8_t* wsMsg);
+void processAppWSmsg(const char* wsMsg);
 void remote_log_init();
 void removeChar(char *s, char c);
 void reset_log();
-void setPeripheralResponse(byte pinNum, uint32_t responseData);
+void setPeripheralResponse(const byte pinNum, const uint32_t responseData);
 void showProgress();
 void startFTPtask();
 void startOTAtask();
 void startSecTimer(bool startTimer);
-bool startSpiffs(bool deleteAll = false);
+bool startStorage();
 void startWebServer();
 bool startWifi();
 void syncToBrowser(const char *val);
 bool updateAppStatus(const char* variable, const char* value);
-bool updateConfigMap(const char* variable, const char* value);
+bool updateConfigVect(const char* variable, const char* value);
 bool updateStatus(const char* variable, const char* _value);
 void urlDecode(char* inVal);
+uint32_t usePeripheral(const byte pinNum, const uint32_t receivedData);
 esp_err_t webAppSpecificHandler(httpd_req_t *req, const char* variable, const char* value);
-void wsAsyncSend(char* wsData);
+void wgetFile(const char* githubURL, const char* filePath, bool restart = false);
+void wsAsyncSend(const char* wsData);
 
 /******************** Global utility declarations *******************/
 
@@ -151,7 +160,7 @@ extern char ST_gw[];
 extern char ST_ns1[];
 extern char ST_ns2[];
 
-extern char Auth_User[]; 
+extern char Auth_Name[]; 
 extern char Auth_Pass[];
 
 extern int responseTimeoutSecs; // time to wait for FTP or SMTP response
@@ -159,6 +168,7 @@ extern bool allowAP; // set to true to allow AP to startup if cannot reconnect t
 extern int wifiTimeoutSecs; // how often to check wifi status
 extern uint8_t percentLoaded;
 extern int refreshVal;
+extern bool configLoaded;
 
 extern char timezone[];
 extern char* jsonBuff; 
@@ -167,6 +177,12 @@ extern bool logMode;
 extern bool timeSynchronized;
 extern bool monitorOpen; 
 extern const char* defaultPage_html;
+extern const char* otaPage_html;
+extern SemaphoreHandle_t wsSendMutex;
+// SD storage
+extern int sdMinCardFreeSpace; // Minimum amount of card free Megabytes before freeSpaceMode action is enabled
+extern int sdFreeSpaceMode; // 0 - No Check, 1 - Delete oldest dir, 2 - Upload to ftp and then delete folder on SD 
+extern bool sdFormatIfMountFailed ; // Auto format the sd card if mount failed. Set to false to not auto format.
 
 // peripheral stored values
 extern bool useIOextender; // true to use IO Extender, otherwise false
@@ -213,11 +229,12 @@ extern int micWsPin;  // I2S WS
 extern int micSdPin;  // I2S SD
 
 // configure for specific servo model, eg for SG90
+extern int servoDelay;
 extern int servoMinAngle; // degrees
 extern int servoMaxAngle;
 extern int servoMinPulseWidth; // usecs
 extern int servoMaxPulseWidth;
-extern int servoDelay;
+
 // battery monitor
 extern int voltDivider;
 extern int voltLow;
@@ -250,4 +267,3 @@ extern TaskHandle_t uartClientHandle;
 #define DBG_FORMAT(format) LOG_COLOR_DBG "[%s DEBUG @ %s:%u] " format LOG_NO_COLOR "\n", esp_log_system_timestamp(), pathToFileName(__FILE__), __LINE__
 #define LOG_DBG(format, ...) if (dbgVerbose) logPrint(DBG_FORMAT(format), ##__VA_ARGS__)
 #define LOG_PRT(buff, bufflen) log_print_buf((const uint8_t*)buff, bufflen)
-  

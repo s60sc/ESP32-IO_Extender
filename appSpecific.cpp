@@ -40,14 +40,16 @@ bool updateAppStatus(const char* variable, const char* value) {
 
 void buildAppJsonString(bool quick) {
   // build app specific part of json string
-  char* p = jsonBuff + 1;
-  *p = 0;
 }
 
 esp_err_t webAppSpecificHandler(httpd_req_t *req, const char* variable, const char* value) {
   return ESP_OK;
 }
 
-void processAppWSmsg(uint8_t* wsMsg) {
+void processAppWSmsg(const char* wsMsg) {
   // process websocket message & send response if required
+}
+
+void appDataFiles() {
+  // callback from setupAssist.cpp, for any app specific files 
 }
