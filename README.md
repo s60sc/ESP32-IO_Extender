@@ -4,7 +4,10 @@ ESP32 application to act as an IO Extender for another ESP. For example the ESP 
 
 <img src="extras/espcam.jpg" width="400" height="300"> <img src="extras/codeburner.jpg" width="400" height="300">  
 
-## Only use this app if you are familiar with coding and electronics, and can fix issues yourself  
+<svg height="80" width="100%" font-size="25" fill="red" text-anchor="middle">
+  <text x="50%" y="30%">Only use this app if you are familiar with coding</text>
+  <text x="50%" y="70%">and electronics, and can fix issues yourself</text>
+</svg>
 
 ## Design
 
