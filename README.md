@@ -2,10 +2,12 @@
 
 ESP32 application to act as an IO Extender for another ESP. For example the ESP Camera module used by the ESP32-MJPEG2SD app has very few free pins to support peripherals such as pan / tilt servos. A low cost module such as the ESP32-C3FN4 can be used to provide additional pins, as in image below, providing pan and tilt servos and a DS18B20 temperature sensor:
 
-<img src="extras/espcam.jpg" width="400" height="300"> <img src="extras/codeburner.jpg" width="400" height="300">
+<img src="extras/espcam.jpg" width="400" height="300"> <img src="extras/codeburner.jpg" width="400" height="300">  
 
-<br/>**Only use this app if you are familiar with coding and electronics**
-
+<svg height="80" width="100%" font-size="25" fill="red" text-anchor="middle">
+  <text x="50%" y="30%">Only use this app if you are familiar with coding</text>
+  <text x="50%" y="70%">and electronics, and can fix issues yourself</text>
+</svg>
 
 ## Design
 
