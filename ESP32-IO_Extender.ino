@@ -13,12 +13,11 @@
 //
 // s60sc 2022
 
-#include "globals.h"
-
-void OTAprereq() {} // dummy
+#include "appGlobals.h"
 
 void setup() {
-  startSpiffs();
+  logSetup();
+  startStorage();
   loadConfig();
 #ifdef DEV_ONLY
   devSetup();
@@ -26,9 +25,12 @@ void setup() {
   // connect wifi or start config AP if router details not available
   startWifi(); 
   startWebServer();
-  LOG_INF(APP_NAME " v" APP_VER " ready ...");
-  prepPeripherals();
-  checkMemory();
+  if (strlen(startupFailure)) LOG_ERR("%s", startupFailure);
+  else {
+    prepPeripherals();
+    LOG_INF(APP_NAME " v" APP_VER " ready ...");
+    checkMemory();
+  }
 }
 
 void loop() {

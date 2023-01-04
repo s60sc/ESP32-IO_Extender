@@ -2,7 +2,10 @@
 //
 // s60sc 2022
 
-#include "globals.h"
+#include "appGlobals.h"
+
+
+/********* mandatory callbacks *********/
 
 bool updateAppStatus(const char* variable, const char* value) {
   // update vars from browser input
@@ -23,15 +26,12 @@ bool updateAppStatus(const char* variable, const char* value) {
   else if(!strcmp(variable, "servoPanPin")) servoPanPin = intVal;
   else if(!strcmp(variable, "servoTiltPin")) servoTiltPin = intVal;
   else if(!strcmp(variable, "ds18b20Pin")) ds18b20Pin = intVal;
-  else if(!strcmp(variable, "voltPin")) voltPin = intVal;
-  else if(!strcmp(variable, "micSckPin")) micSckPin = intVal;
-  else if(!strcmp(variable, "micWsPin")) micWsPin = intVal;
-  else if(!strcmp(variable, "micSdPin")) micSdPin = intVal;
   else if(!strcmp(variable, "servoDelay")) servoDelay = intVal;
   else if(!strcmp(variable, "servoMinAngle")) servoMinAngle = intVal;
   else if(!strcmp(variable, "servoMaxAngle")) servoMaxAngle = intVal;
   else if(!strcmp(variable, "servoMinPulseWidth")) servoMinPulseWidth = intVal;
   else if(!strcmp(variable, "servoMaxPulseWidth")) servoMaxPulseWidth = intVal;
+  else if(!strcmp(variable, "voltPin")) voltPin = intVal;
   else if(!strcmp(variable, "voltDivider")) voltDivider = intVal;
   else if(!strcmp(variable, "voltLow")) voltLow = intVal;
   else if(!strcmp(variable, "voltInterval")) voltInterval = intVal;
@@ -40,16 +40,41 @@ bool updateAppStatus(const char* variable, const char* value) {
 
 void buildAppJsonString(bool quick) {
   // build app specific part of json string
+  char* p = jsonBuff + 1;
+  *p = 0;
+}
+
+void wsAppSpecificHandler(const char* wsMsg) {
+  // message from web socket
+  int wsLen = strlen(wsMsg) - 1;
+  switch ((char)wsMsg[0]) {
+    case 'H': {
+      // keepalive heartbeat - ignore
+      break;
+    }
+    case 'S': {
+      // status request
+      buildJsonString(wsLen); // required config number 
+      logPrint("%s\n", jsonBuff);
+      break;
+    }    
+    case 'U': {
+      // update or control request
+      memcpy(jsonBuff, wsMsg + 1, wsLen); // remove 'U'
+      parseJson(wsLen);
+      break;
+    }
+  }
 }
 
 esp_err_t webAppSpecificHandler(httpd_req_t *req, const char* variable, const char* value) {
   return ESP_OK;
 }
 
-void processAppWSmsg(const char* wsMsg) {
-  // process websocket message & send response if required
+bool appDataFiles() {
+  // callback from setupAssist.cpp, for any app specific files 
+  return true;
 }
 
-void appDataFiles() {
-  // callback from setupAssist.cpp, for any app specific files 
-}
+void OTAprereq() {} // dummy 
+
