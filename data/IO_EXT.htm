@@ -1,135 +1,159 @@
-<!DOCTYPE html>     
+<!DOCTYPE html>   
+<!-- 
+  s60sc 2022 
+-->     
 <html>     
   <head>
     <meta charset="UTF-8"/>  
     <title>IO Extender</title>
-  </head>
   
-  <style>
-    body {
-      font-family: helvetica  !important;
-    }
+    <style>
+      :root {
+        /* colors used on web pages - see https://www.w3schools.com/colors/colors_names.asp */
+        --buttonReady: silver;
+        --buttonActive: #A0A0A0; /* mid gray */
+        --buttonHover: #D0D0D0; /* light gray */
+        --buttonText: white;
+        --buttonLabel: black;
+        --itemInactive: #F0F0F0; /* very light gray */
+        --menuBackground: #404040; /* dark gray */
+        --inputText: navy;
+        --pageText: black; 
+        --inputBackground: WhiteSmoke; 
+        --itemBorder: silver; 
+        --pageBackground: white;
+      }
+      body {
+        font-family: Helvetica  !important;
+        background: var(--pageBackground);
+        color: var(--pageText);
+      }
+      
+      .fixed {
+        position: fixed;
+        top: 0;
+      }
+      /* Style the tab */
+      .tab {
+        overflow: hidden;
+        border: 1px solid var(--itemBorder);
+        background-color: var(--menuBackground);
+      }
+
+      /* Style the buttons inside the tab */
+      .tab button {
+        background-color: var(--buttonReady);
+        float: center;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+      }
+
+      /* Change background color of buttons on hover */
+      .tab button:hover {
+        background-color: var(--buttonHover);
+      }
+
+      /* Create an active/current tablink class */
+      .tab button.active {
+        background-color: var(--buttonActive);
+      }
+
+      /* Style the tab content */
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 0px solid var(--itemBorder);
+        border-top: none;
+      }
+
+     .grid-cols2 {
+        grid-template-columns: 200px 200px;
+      }
+
+     .grid-cols4 {
+        grid-template-columns: 200px 200px 200px 200px
+      }
+
+      .grid-cols2, .grid-cols4 {
+        display: grid;
+        background-color: none;
+        text-align: center;
+        font-size: 30px;
+        border: 0px solid var(--itemBorder);
+        dominant-baseline: middle;
+        text-anchor: middle;
+      }
+      
+      rect {
+         fill: var(--buttonReady);
+         width: 100%;
+         height: 100%; 
+         x: 0;
+         y: 0;
+         rx: 15%;
+       }
+      
+      rect:hover {
+        fill: var(--buttonHover);
+      }
+      
+      rect:active {
+        fill: var(--buttonActive);
+      }
     
-    /* Style the tab */
-    .tab {
-      overflow: hidden;
-      border: 1px solid #ccc;
-      background-color: #f1f1f1;
-    }
+      text {
+        pointer-events: none;
+      }
+      
+      input, #applog  {
+          font:20px 'Courier New';
+          font-weight:bold;
+          color: var(--inputText);
+      }
 
-    /* Style the buttons inside the tab */
-    .tab button {
-      background-color: inherit;
-      float: left;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 14px 16px;
-      transition: 0.3s;
-      font-size: 17px;
-    }
-
-    /* Change background color of buttons on hover */
-    .tab button:hover {
-      background-color: #ddd;
-    }
-
-    /* Create an active/current tablink class */
-    .tab button.active {
-      background-color: #ccc;
-    }
-
-    /* Style the tab content */
-    .tabcontent {
-      display: none;
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-top: none;
-    }
-
-   .grid-cols2 {
-      grid-template-columns: 200px 200px;
-    }
-
-   .grid-cols4 {
-      grid-template-columns: 200px 200px 200px 200px
-    }
-
-    .grid-cols2, .grid-cols4 {
-      display: grid;
-      background-color: none;
-      text-align: center;
-      font-size: 30px;
-      border: 0px solid black;
-      dominant-baseline: middle;
-      text-anchor: middle;
-    }
-    
-    rect {
-       fill: silver;
-       width: 100%;
-       height: 100%; 
-       x: 0;
-       y: 0;
-       rx: 5%;
-     }
-    
-    rect:hover {
-      fill: DarkGrey;
-    }
-    
-    rect:active {
-      fill: DarkSeaGreen;
-    }
-  
-    text {
-      pointer-events: none;
-    }
-    
-    input, #applog  {
-        font:20px 'Courier New';
+      #applog {
+        height:90%;
+        width:90%;
+        border:2px solid var(--itemBorder);
+        overflow:auto;
+      }
+          
+      .configGroup td {
+        border:2px solid var(--itemBorder);
+      }
+      
+      th, td {
+        border-collapse: collapse;
+        padding: 2px 3px;
+        text-align: left;
+      }
+      table {
+        border: 0px
+      }
+      th {
         font-weight:bold;
-        color: navy;
-    }
+      }
 
-    #applog {
-      height:90%;
-      width:90%;
-      border:2px solid #ccc;
-      overflow:auto;
-    }
-        
-    .configGroup td {
-      border: solid 2px #ddd;
-    }
-    
-    th, td {
-      border-collapse: collapse;
-      padding: 2px 3px;
-      text-align: left;
-    }
-    table {
-      border: 0px
-    }
-    th {
-      font-weight:bold;
-    }
-
-  </style>
-  
+    </style>
+  </head>
   <body>
-    <div class="tab">
-      <button class="tablinks">Show Log</button>
+    <div class="tab fixed">
+      <button class="tablinks active">Show Log</button>
       <button class="tablinks">Edit Config</button>
       <button class="tablinks">OTA Upload</button>
     </div>
-    <div id="ShowLog" class="tabcontent">
+    </br></br></br>
+    <div id="ShowLog" class="tabcontent" style="display:block"; top:100px">
       <br/>
       <div class="grid-cols2">
         <div>
           <svg width="150" height="40">
             <rect/>
-            <text id="clearWSlog" x="50%" y="50%" font-size="20" fill="black">Clear Log</text>
+            <text id="clearWSlog" x="50%" y="50%" font-size="20" fill=var(--buttonLabel)>Clear Log</text>
           </svg>
         </div>
         <div>
@@ -145,25 +169,26 @@
         <div>
           <svg width="150" height="40">
             <rect/>
-      	      <text id="save" x="50%" y="50%" font-size="20" fill="black">Save</text>
+      	      <text id="save" x="50%" y="50%" font-size="20" fill=var(--buttonLabel)>Save</text>
           </svg>
         </div>
         <div>
           <svg width="150" height="40">
             <rect/>
-            <text id="reset" x="50%" y="50%"font-size="20" fill="black">Reboot ESP</text>
+            <text id="reset" x="50%" y="50%"font-size="20" fill=var(--buttonLabel)>Reboot ESP</text>
           </svg>
         </div>
         <div>
           <svg width="150" height="40">
             <rect/>
-            <text id="deldata" x="50%" y="50%" font-size="20" fill="black">Reload Spiffs</text>
+            <text id="deldata" x="50%" y="50%" font-size="20" fill=var(--buttonLabel)>Reload /data</text>
           </svg>
         </div>
         <div>
           <svg width="150" height="40">
             <rect/>
-            <text id="clear" x="50%" y="50%" font-size="20" fill="black">Clear NVS</text>
+            <text id="clear" x="50%" y="50%" font-size="20" fill=var(--buttonLabel)>Clear NVS</text>
+                                                     
           </svg>
         </div>
       </div>
@@ -175,13 +200,13 @@
         <div>
           <svg width="150" height="40">
             <rect/>
-            <text id="wifi" x="50%" y="50%" font-size="20" fill="black">Wifi</text>
+            <text id="wifi" x="50%" y="50%" font-size="20" fill=var(--buttonLabel)>Wifi</text>
           </svg>
         </div>
         <div>
           <svg width="150" height="40">
             <rect/>
-            <text id="peripherals" x="50%" y="50%" font-size="20" fill="black">Peripherals</text>
+            <text id="peripherals" x="50%" y="50%" font-size="20" fill=var(--buttonLabel)>Peripherals</text>
           </svg>
         </div>
         <div>&nbsp;</div>
@@ -193,11 +218,11 @@
     </div>
            
     <div id="OTAUpload" class="tabcontent">
-      <br></br>
+      <br/><br/>
       <form id="upload_form" enctype="multipart/form-data" method="post">
-        <input type="file" name="file1" id="file1" onchange="uploadFile()"><br>
-        <br></br>
-        <progress id="progressOta" value="0" max="100" style="width:300px;"></progress>
+        <input type="file" name="file1" id="file1" onchange="uploadFile()">
+        <br/><br/>
+        <progress id="progressOta" value="0" max="100" style="width:300px;"></progress>%
         <h3 id="status"></h3>
         <p id="loaded_n_total"></p>
       </form>
@@ -209,8 +234,9 @@
       
       const baseHost = window.location.origin;
       const wsServer = "ws://" + document.location.host + ":80/ws";
-      let ws;
-      let statusData; // stores all status data as key val pair
+      let ws = null;
+      let hbInterval = null;
+      let statusData = {}; // stores all status data as key val pair
       let cfgGroupNow = -1;
       const $ = document.querySelector.bind(document);
       const $$ = document.querySelectorAll.bind(document);
@@ -218,7 +244,8 @@
       document.addEventListener("DOMContentLoaded", () => {
         try {
           initWebSocket();
-        } catch (error) {addLogLine("Error: " + error.message);}
+          loadStatus(); 
+        } catch (error) {sendLog("Error: " + error.message);}
         setListeners();
       });
       
@@ -226,32 +253,63 @@
       
       // define websocket handling
       function initWebSocket() {
-        addLogLine("Connect to: " + wsServer);
+        sendLog("Connect to: " + wsServer);
         ws = new WebSocket(wsServer);
         ws.onopen = onOpen;
         ws.onclose = onClose;
         ws.onmessage = onMessage; 
+        ws.onerror = onError;
+      }
+      
+      // periodically check that connection is still up
+      function heartbeat() {
+        if (!ws) return;
+        if (ws.readyState !== 1) return;
+        sendCmd("H");
+        clearTimeout(hbInterval);
+        hbInterval = setTimeout(heartbeat, 30000);
       }
       
       // connect to websocket server
       function onOpen(event) {
-        addLogLine("Connected");
+        sendLog("Connected");
+        heartbeat();
       }
       
-      // process received message
-      function onMessage(messageEvent) {
+      // process received WS message
+      function onMessage(messageEvent) {    
         if (messageEvent.data.startsWith("{")) {
+          // json data
           let updateData = JSON.parse(messageEvent.data);
-          Object.keys(updateData).forEach(key => {
-            statusData[key] = updateData[key];
-            processStatus(key, false);
-          });
-        } else addLogLine(messageEvent.data);
+          let filter = updateData.cfgGroup;
+          delete updateData.cfgGroup;
+          if (filter == "-1") {
+            // status update
+            Object.entries(updateData).forEach(([key, value]) => {
+              statusData[key] = value;
+              // replace each existing value with new value, using key name to match html tag id
+              if ($('text#'+key)) $('text#'+key).textContent = value;
+              else if ($('input[id="'+key+'"]')) $('input[id="'+key+'"]').value = value;
+              processStatus(key, false);
+            });
+          } else {
+            // format received config json into html table
+            buildTable(updateData, filter);
+          }
+        } else addLogLine(messageEvent.data); 
+      }
+      
+      function onError(event) {
+        sendLog("WS Error: " + event.code);
       }
       
       function onClose(event) {
-        addLogLine("Disconnected");
-        initWebSocket();
+       sendLog("Disconnected: " + event.code + ' - ' + event.reason);
+        // event.codes:
+        //   1006 if server not available, or another web page is already open
+        //   1005 if closed from app
+        if (event.code == 1006) alert("Closed websocket as a newer connection was made, refresh browser page");
+        else if (event.code != 1005) initWebSocket(); // retry if any other reason
       }
       
       /*********** page layout functions ***********/
@@ -303,11 +361,99 @@
         });
       }
       
+      /*********** utility functions ***********/
+      
       // add received line to log element
       function addLogLine(text) {
         let log = document.getElementById('applog');
         let new_node = document.createTextNode(text + "\n");
         log.append(new_node);
+        // auto scroll new entry unless scroll bar is not at bottom
+        const bottom = 40; // double font size
+        const pos = Math.abs(log.scrollHeight - log.clientHeight - log.scrollTop);
+        if (pos < bottom) log.scrollTop = log.scrollHeight;
+      }
+      
+      function debounce(func, timeout = 500){
+        // debounce rapid clicks to prevent unnecessary fetches
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+      }
+      
+      const debounceSendControl = debounce((query) => fetch(baseHost + encodeURI('/control?' + query)));
+      
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+      
+      /*********** command processing ***********/
+      
+      function setListeners() {
+        // add event listener for change events
+        setAppListeners();
+        // add event listener for click events
+        document.addEventListener("click", function (event) {
+          // svg rect elements, use id of its following text node
+          if (event.target.nodeName == 'rect') processStatus(event.target.nextElementSibling.id, true);
+          // tab buttons, use button text as tab id
+          if (event.target.classList.contains('tablinks')) openTab(event.target, event.target.innerHTML.replaceAll(' ', ''));
+        });
+        // input fields of given class
+        document.addEventListener("change", function (event) {
+          // config input fields 
+         if (event.target.classList.contains('configItem')) { 
+           fetch(baseHost + encodeURI('/control?' + event.target.name + '=' + event.target.value));
+         }
+        });
+        // event listener to close web socket immediately on leaving page
+        window.addEventListener('beforeunload', function (event) {
+          if (ws) ws.terminate();
+        });
+      }
+      
+      function sendWsCmd() {
+        // send user command to websocket server
+        let txt = $('#txtCmd');
+        let line = txt.value;
+        if (line != "" && ws !== undefined) {
+          sendCmd(line);
+          txt.value = "";
+          txt.focus();
+        } else sendLog("No command or no connection");
+      }
+      
+      function sendCmd(reqStr) {
+        ws.send(reqStr);
+        sendLog("Cmd: " + reqStr);
+      }
+      
+      function sendLog(reqStr) {
+        let date = new Date();
+        addLogLine("[" + date.toLocaleTimeString() + " Web] " + reqStr);
+      }
+      
+      function sendWsUpdates(doAction) {    
+        // get each required update element and obtain id/name and value into array to send as json 
+        let jarray = {};
+        jarray["action"] = doAction;
+        $$('.update-action').forEach(el => {
+          if (el.nodeName == "INPUT") jarray[el.getAttribute('id')] = el.value.trim();
+        });
+        sendCmd('U' + JSON.stringify(jarray));
+      }
+
+      function processStatus(key, fromUser) {
+        // called for each updated key
+        if (key == "config") getConfig("0");
+        else if (key == "save") debounceSendControl(key + '=1');
+        else if (key == "reset") debounceSendControl(key + '=1');
+        else if (key == "deldata") debounceSendControl(key + '=1');
+        else if (key == "clear") debounceSendControl(key + '=1');
+        else if (key == "clearWSlog") $('#applog').innerHTML = "";
+        else processAppStatus(key, fromUser);
       }
       
       /*********** config functions ***********/
@@ -338,18 +484,20 @@
             tr.appendChild(th);
           }
 
-          // add each setting as a row containg setting name and setting value
+          // add each setting as a row containing setting name and setting value
           let newRow = 1;
           Object.keys(configData).forEach( key => {
-            if (newRow) tr = table.insertRow(-1);
-            let tabCell = tr.insertCell(-1);
-            if (newRow) {
-              tabCell.innerHTML = configData[key]; // name of setting
-              newRow = 0;
-            } else {
-              // input field for value of setting
-              tabCell.innerHTML = '<input type="text" class="configItem" name="' + key + '" value="' + configData[key] +'">'; 
-              newRow = 1;
+            if (key != "cfgGroup") { // skip over this entry    
+              if (newRow) tr = table.insertRow(-1);
+              let tabCell = tr.insertCell(-1);
+              if (newRow) {
+                tabCell.innerHTML = configData[key]; // name of setting
+                newRow = 0;
+              } else {
+                // input field for value of setting
+                tabCell.innerHTML = '<input type="text" class="configItem" name="' + key + '" value="' + configData[key] +'">'; 
+                newRow = 1;
+              }
             }
           })
           // add the newly created table at placeholder
@@ -392,39 +540,24 @@
 
       function errorHandler(event) {
         $("#status").innerHTML = "Upload Failed";
+        $("#progressOta").value = 0;
       }
 
       function abortHandler(event) {
         $("#status").innerHTML = "Upload Aborted";
+        $("#progressOta").value = 0;
       }
 
-      function processStatus(key) {
+      /****************** app specific ********************/ 
+      function processAppStatus(key, fromUser) {
+        // called for each updated key
         if (key == "wifi") getConfig("0");
-        else if (key == "peripherals") getConfig("0123");
-        else if (key == "save") fetch(baseHost + encodeURI('/control?' + key + '=1'));
-        else if (key == "reset") fetch(baseHost + encodeURI('/control?' + key + '=1'));
-        else if (key == "deldata") fetch(baseHost + encodeURI('/control?' + key + '=1'));
-        else if (key == "clear") fetch(baseHost + encodeURI('/control?' + key + '=1'));
-        else if (key == "clearWSlog") $('#applog').innerHTML = "";
-      } 
-      
-      function setListeners() {
-        // add event listener for change events
-        document.addEventListener("change", function (event) {
-          // config input fields 
-          if (event.target.classList.contains('configItem')) { 
-            fetch(baseHost + encodeURI('/control?' + event.target.name + '=' + event.target.value));
-          }
-        });
-        
-        // add event listener for rect click events
-        document.addEventListener("click", function (event) {
-          // svg rect elements, use id of its following text node
-          if (event.target.nodeName == 'rect') processStatus(event.target.nextElementSibling.id);
-          // tab buttons, use button text without spaces as tab id
-          if (event.target.classList.contains('tablinks')) openTab(event.target, event.target.innerHTML.replaceAll(' ', ''));
-        });
+        else if (key == "peripherals") getConfig("0123");     
       }
+      
+      function setAppListeners() {
+        // add event listener for custom change events
+       }
       
     </script>
   </body>

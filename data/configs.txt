@@ -1,6 +1,6 @@
 restart::99:na
 ST_SSID::0:Wifi SSID name
-ST_Pass::0: Wifi SSID password
+ST_Pass::0:Wifi SSID password
 ST_ip::0:Static IP address
 ST_gw::0:Router IP address
 ST_sn:255.255.255.0:0:Router subnet
@@ -9,13 +9,16 @@ ST_ns2::0:Alt DNS server
 AP_ip::0:AP IP Address if not 192.168.4.1
 AP_sn::0:AP subnet
 AP_gw::0:AP gateway
-allowAP:1:0:Allow AP Fallback if no router (0/1)
-AP_Pass::0:AP password
+allowAP:1:0:Allow simultaneous AP (0/1)
+AP_SSID::0:AP SSID name
+AP_Pass::0:AP Password
 Auth_Name::0:Optional user name for web page login
-Auth_Pass::0:Optional password for web page login
+Auth_Pass::0:Optional user name for web page password
 hostName::0:Device host name
+formatIfMountFailed:0:2:Format file system on failure (0/1)
 wifiTimeoutSecs:30:0:WiFi connect timeout (secs)
-useUART0:0:99:na
+allowSpaces:0:0:Allow whitespace in configs.txt (0/1)
+useUART0:1:99:na
 uartTxdPin::3:UART1 TX pin
 uartRxdPin::3:UART1 RX pin
 pirUse:0:3:Use PIR for detection (0/1)
@@ -28,7 +31,6 @@ lampPin::3:Pin used for Lamp
 servoPanPin::3:Pin used for Pan Servo
 servoTiltPin::3:Pin used for Tilt Servo
 ds18b20Pin::3:Pin used for DS18B20 temperature sensor
-voltPin::3:Pin used for battery voltage monitoring
 micSckPin::3:Pin used for I2S microphone SCK 
 micWsPin::3:Pin used for I2S microphone WS
 micSdPin::3:Pin used for I2S microphone SD
@@ -39,4 +41,6 @@ servoMinPulseWidth:544:3:Set min pulse width for servo model (usecs)
 servoMaxPulseWidth:2400:3:Set max pulse width for servo model (usecs)
 voltDivider:2:3:Voltage divider resistor ratio
 voltLow:3:3:Warning level for low voltage
-voltInterval:5:3: Voltage check interval (secs)
+voltInterval:5:3:Voltage check interval (mins)
+voltPin::3:ADC Pin used for battery voltage
+voltUse:0:3: Use Voltage check (0/1)
