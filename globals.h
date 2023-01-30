@@ -6,8 +6,8 @@
 // to compile with -Wall -Werror=all -Wextra
 #pragma GCC diagnostic ignored "-Wunused-function"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-//#pragma GCC diagnostic ignored "-Wunused-variable"
-//#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 /******************** Libraries *******************/
 
@@ -45,7 +45,8 @@ void debugMemory(const char* caller);
 void dateFormat(char* inBuff, size_t inBuffLen, bool isFolder);
 void deleteFolderOrFile(const char* deleteThis);
 void devSetup();
-void doRestart(String restartStr);
+void doIOextPing();
+void doRestart(const char* restartStr);
 void emailAlert(const char* _subject, const char* _message);
 const char* encode64(const char* inp);
 const uint8_t* encode64chunk(const uint8_t* inp, int rem);
@@ -53,12 +54,14 @@ bool externalPeripheral(byte pinNum, uint32_t outputData = 0);
 void flush_log(bool andClose = false);
 void formatElapsedTime(char* timeStr, uint32_t timeVal);
 void formatHex(const char* inData, size_t inLen);
-bool ftpFileOrFolder(const char* fileFolder);
+bool ftpFileOrFolder(const char* fileFolder, bool _deleteAfter = false);
 const char* getEncType(int ssidIndex);
+time_t getEpoch();
 bool getLocalNTP();
 void getOldestDir(char* oldestDir);
 void goToSleep(int wakeupPin, bool deepSleep);
 void initStatus(int cfgGroup, int delayVal);
+void killWebSocket();
 void listBuff(const uint8_t* b, size_t len); 
 bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* extension);
 bool loadConfig();
@@ -69,6 +72,8 @@ bool parseJson(int rxSize);
 void prepPeripherals();
 void prepSMTP();
 void prepUart();
+float readTemperature(bool isCelsius);
+float readVoltage();
 void remote_log_init();
 void removeChar(char *s, char c);
 void reset_log();
@@ -81,7 +86,8 @@ void startSecTimer(bool startTimer);
 bool startStorage();
 void startWebServer();
 bool startWifi(bool firstcall = true);
-void syncToBrowser(const char *val);
+void stopPing();
+void syncToBrowser(uint32_t browserUTC);
 bool updateConfigVect(const char* variable, const char* value);
 void updateStatus(const char* variable, const char* _value);
 void urlDecode(char* inVal);
@@ -140,9 +146,11 @@ extern int smtpFrame; // which captured frame number to use for email image
 extern int smtpMaxEmails; // too many could cause account suspension
 
 extern char timezone[];
+extern char ntpServer[];
 extern char* jsonBuff; 
 extern bool dbgVerbose;
 extern bool logMode;
+extern char alertMsg[];
 extern bool timeSynchronized;
 extern bool monitorOpen; 
 extern const char* defaultPage_html;
@@ -174,10 +182,11 @@ extern bool formatIfMountFailed ; // Auto format the file system if mount failed
 
 #define INF_FORMAT(format) "[%s %s] " format "\n", esp_log_system_timestamp(), __FUNCTION__
 #define LOG_INF(format, ...) logPrint(INF_FORMAT(format), ##__VA_ARGS__)
+#define LOG_ALT(format, ...) logPrint(INF_FORMAT(format "~"), ##__VA_ARGS__)
 #define WRN_FORMAT(format) LOG_COLOR_WRN "[%s WARN %s] " format LOG_NO_COLOR "\n", esp_log_system_timestamp(), __FUNCTION__
-#define LOG_WRN(format, ...) logPrint(WRN_FORMAT(format), ##__VA_ARGS__)
+#define LOG_WRN(format, ...) logPrint(WRN_FORMAT(format "~"), ##__VA_ARGS__)
 #define ERR_FORMAT(format) LOG_COLOR_ERR "[%s ERROR @ %s:%u] " format LOG_NO_COLOR "\n", esp_log_system_timestamp(), pathToFileName(__FILE__), __LINE__
-#define LOG_ERR(format, ...) logPrint(ERR_FORMAT(format), ##__VA_ARGS__)
+#define LOG_ERR(format, ...) logPrint(ERR_FORMAT(format "~"), ##__VA_ARGS__)
 #define DBG_FORMAT(format) LOG_COLOR_DBG "[%s DEBUG @ %s:%u] " format LOG_NO_COLOR "\n", esp_log_system_timestamp(), pathToFileName(__FILE__), __LINE__
 #define LOG_DBG(format, ...) if (dbgVerbose) logPrint(DBG_FORMAT(format), ##__VA_ARGS__)
 #define CHK_FORMAT(format) LOG_COLOR_ERR "[######### CHECK @ %s:%u] " format LOG_NO_COLOR "\n", pathToFileName(__FILE__), __LINE__

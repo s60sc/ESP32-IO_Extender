@@ -19,14 +19,18 @@ void setup() {
   logSetup();
   startStorage();
   loadConfig();
+
 #ifdef DEV_ONLY
   devSetup();
 #endif
+
   // connect wifi or start config AP if router details not available
   startWifi(); 
+  
   startWebServer();
   if (strlen(startupFailure)) LOG_ERR("%s", startupFailure);
   else {
+    // start rest of services
     prepPeripherals();
     LOG_INF(APP_NAME " v" APP_VER " ready ...");
     checkMemory();

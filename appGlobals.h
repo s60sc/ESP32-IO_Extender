@@ -2,19 +2,19 @@
 //
 // s60sc 2022
 
+#pragma once
 #include "globals.h"
-
 
 /********************* fixed defines leave as is *******************/ 
 /** Do not change anything below here unless you know what you are doing **/
 
-//#define DEV_ONLY // leave commented out
+#define DEV_ONLY // leave commented out
 #define STATIC_IP_OCTAL "160" // dev only
 #define CHECK_MEM false // leave as false
 #define FLUSH_DELAY 0 // for debugging crashes
  
 #define APP_NAME "ESP_IO_Extender" // max 15 chars
-#define APP_VER "1.2"
+#define APP_VER "1.3"
 
 #define MAX_CLIENTS 2 // allowing too many concurrent web clients can cause errors
 #define DATA_DIR "/data"
@@ -31,12 +31,12 @@
 #define FILE_NAME_LEN 64
 #define ONEMEG (1024 * 1024)
 #define MAX_PWD_LEN 64
-#define JSON_BUFF_LEN (1024 * 2) 
+#define JSON_BUFF_LEN (1024 * 4) 
 #define MAX_CONFIGS 50 // > number of entries in configs.txt
 #define GITHUB_URL "https://raw.githubusercontent.com/s60sc/ESP32-IO_Extender/main"
 
 #define FILLSTAR "****************************************************************"
-#define DELIM ':'
+#define DELIM '~'
 #define STORAGE LittleFS // use of SPIFFS, LIttleFS or SD_MMC
 #define RAMSIZE (1024 * 8) 
 #define CHUNKSIZE (1024 * 4)
@@ -46,9 +46,6 @@
 
 #define IS_IO_EXTENDER true // must be true for IO_Extender
 #define EXTPIN 100
-
-// which optional web assets to download
-#define USE_JQUERY false
 
 
 /******************** Function declarations *******************/
@@ -82,6 +79,7 @@ extern bool pirUse; // true to use PIR for motion detection
 extern bool lampUse; // true to use lamp
 extern bool lampAuto; // if true in conjunction with usePir & useLamp, switch on lamp when PIR activated
 extern bool servoUse; // true to use pan / tilt servo control
+extern bool voltUse; // true to report on ADC pin eg for for battery
 // microphone cannot be used on IO Extender
 extern bool micUse; // true to use external I2S microphone 
 
@@ -94,10 +92,8 @@ extern int servoPanPin; // if useServos is true
 extern int servoTiltPin;
 // ambient / module temperature reading 
 extern int ds18b20Pin; // if INCLUDE_DS18B20 uncommented
-extern float dsTemp;
 // batt monitoring 
-extern int voltPin; // if INCLUDE_VOLTAGE uncommented
-extern float currentVoltage; 
+extern int voltPin; 
 
 // configure for specific servo model, eg for SG90
 extern int servoDelay;
@@ -109,9 +105,9 @@ extern int servoMaxPulseWidth;
 // battery monitor
 extern int voltDivider;
 extern int voltLow;
-extern int voltInterval;
+extern int voltInterval;     
 
 // task handling
-extern TaskHandle_t getDS18Handle;
+extern TaskHandle_t DS18B20handle;
+extern TaskHandle_t servoHandle;
 extern TaskHandle_t uartClientHandle;
-

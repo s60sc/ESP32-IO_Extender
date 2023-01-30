@@ -11,8 +11,8 @@ bool formatIfMountFailed = true; // Auto format the file system if mount failed.
 
 // hold sorted list of filenames/folders names in order of newest first
 static std::vector<std::string> fileVec;
-static auto currentDir = "/#current";
-static auto previousDir = "/#previous";
+static auto currentDir = "/~current";
+static auto previousDir = "/~previous";
 static char fsType[10] = {0};
 
 #ifdef INCLUDE_SD
@@ -77,6 +77,7 @@ bool startStorage() {
     strcpy(fsType, "SD_MMC");
     res = prepSD_MMC();
     if (!res) sprintf(startupFailure, "Startup Failure: Check SD card inserted");
+    else checkFreeSpace();
     return res; 
   }
 #endif
@@ -97,7 +98,8 @@ bool startStorage() {
 #endif
     if (res) {  
       // list details of files on file system
-      File root = STORAGE.open("/");
+      const char* rootDir = !strcmp(fsType, "LittleFS") ? "/data" : "/";
+      File root = STORAGE.open(rootDir);
       File file = root.openNextFile();
       while (file) {
         LOG_INF("File: %s, size: %u", file.path(), file.size());
@@ -140,23 +142,25 @@ void inline getFileDate(File file, char* fileDate) {
 
 bool checkFreeSpace() { 
   // Check for sufficient space on SD card
-  if (sdFreeSpaceMode < 1) return false;
+  bool res = false;
   size_t freeSize = (size_t)((STORAGE.totalBytes() - STORAGE.usedBytes()) / ONEMEG);
-  LOG_INF("Card free space: %uMB", freeSize);
-  if (freeSize < sdMinCardFreeSpace) {
-    char oldestDir[FILE_NAME_LEN];
-    getOldestDir(oldestDir);
-    LOG_WRN("Deleting oldest folder: %s %s", oldestDir, sdFreeSpaceMode == 2 ? "after uploading" : "");
-    if (sdFreeSpaceMode == 1) deleteFolderOrFile(oldestDir); // Delete oldest folder
-    if (sdFreeSpaceMode == 2) {
+  if (!sdFreeSpaceMode && freeSize < sdMinCardFreeSpace) 
+    LOG_ERR("Space left %uMB is less than minimum %uMB", freeSize, sdMinCardFreeSpace);
+  else {
+    // delete to make space
+    while (freeSize < sdMinCardFreeSpace) {
+      char oldestDir[FILE_NAME_LEN];
+      getOldestDir(oldestDir);
+      LOG_WRN("Deleting oldest folder: %s %s", oldestDir, sdFreeSpaceMode == 2 ? "after uploading" : "");
 #ifdef INCLUDE_FTP 
-      ftpFileOrFolder(oldestDir); // Upload and then delete oldest folder
+      if (sdFreeSpaceMode == 2) ftpFileOrFolder(oldestDir); // Upload and then delete oldest folder
 #endif
       deleteFolderOrFile(oldestDir);
     }
-    return true;
+    LOG_INF("Card free space: %uMB", freeSize);
+    res = true;
   }
-  return false;
+  return res;
 } 
 
 bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* extension) {
@@ -167,7 +171,7 @@ bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* 
   char fileName[FILE_NAME_LEN];
   bool noEntries = true;
   // set current or previous folder
-  if (strchr(fname, '#') != NULL) {
+  if (strchr(fname, '~') != NULL) {
     if (!strcmp(fname, currentDir)) {
       dateFormat(partName, sizeof(partName), true);
       strcpy(fileName, partName);
@@ -182,7 +186,7 @@ bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* 
       strftime(partName, sizeof(partName), "/%Y%m%d", localtime(&prev));
       strcpy(fileName, partName);
       LOG_INF("Previous directory set to %s", fileName);
-    }
+    } else strcpy(fileName, ""); 
   } else strcpy(fileName, fname);
 
   // check if folder or file
@@ -196,19 +200,19 @@ bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* 
     bool returnDirs = strlen(fileName) > 1 ? (strchr(fileName+1, '/') == NULL ? false : true) : true; 
     // open relevant folder to list contents
     File root = STORAGE.open(fileName);
-    if (!root) LOG_ERR("Failed to open directory %s", fileName);
-    if (!root.isDirectory()) LOG_ERR("Not a directory %s", fileName);
-    LOG_DBG("Retrieving %s in %s", returnDirs ? "folders" : "files", fileName);
+    if (strlen(fileName)) {
+      if (!root) LOG_ERR("Failed to open directory %s", fileName);
+      if (!root.isDirectory()) LOG_ERR("Not a directory %s", fileName);
+      LOG_DBG("Retrieving %s in %s", returnDirs ? "folders" : "files", fileName);
+    }
     
     // build relevant option list
     strcpy(jsonBuff, returnDirs ? "{" : "{\"/\":\".. [ Up ]\",");            
     File file = root.openNextFile();
     if (psramFound()) heap_caps_malloc_extmem_enable(5); // small number to force vector into psram
     while (file) {
-      if (returnDirs && file.isDirectory() 
-          && strstr(file.name(), "System") == NULL // ignore Sys Vol Info
-          && strstr(DATA_DIR, file.name()) == NULL) { // ignore data folder
-        // build folder list
+      if (returnDirs && file.isDirectory() && strstr(DATA_DIR, file.name()) == NULL) {  
+        // build folder list, ignore data folder
         sprintf(partJson, "\"%s\":\"%s\",", file.path(), file.name());
         fileVec.push_back(std::string(partJson));
         noEntries = false;
@@ -226,7 +230,7 @@ bool listDir(const char* fname, char* jsonBuff, size_t jsonBuffLen, const char* 
     if (psramFound()) heap_caps_malloc_extmem_enable(4096);
   }
   
-  if (noEntries && !hasExtension) strcpy(jsonBuff, "{\"/\":\"List folders\",\"/#current\":\"Go to current (today)\",\"/#previous\":\"Go to previous (yesterday)\"}");
+  if (noEntries && !hasExtension) sprintf(jsonBuff, "{\"/\":\"List folders\",\"%s\":\"Go to current (today)\",\"%s\":\"Go to previous (yesterday)\"}", currentDir, previousDir);
   else {
     // build json string content
     sort(fileVec.begin(), fileVec.end(), std::greater<std::string>());
@@ -256,19 +260,24 @@ void deleteFolderOrFile(const char* deleteThis) {
     LOG_ERR("Deletion of %s not permitted", deleteThis);
     return;
   }  
-  LOG_WRN("Deleting : %s", deleteThis);
+  LOG_INF("Deleting : %s", deleteThis);
   // Empty named folder first
   if (df.isDirectory() || ((!strcmp(fsType, "SPIFFS")) && strstr("/", deleteThis) != NULL)) {
     LOG_INF("Folder %s contents", deleteThis);
     File file = df.openNextFile();
     while (file) {
-      if (file.isDirectory()) LOG_INF("  DIR : %s", file.path());
-      else LOG_INF("  FILE : %s SIZE : %uMB %sdeleted", file.path(), file.size() / ONEMEG, 
-        STORAGE.remove(file.path()) ? "" : "not ");
+      char filepath[FILE_NAME_LEN];
+      strcpy(filepath, file.path()); 
+      if (file.isDirectory()) LOG_INF("  DIR : %s", filepath);
+      else {
+        int fileSize = file.size() / ONEMEG;
+        file.close();
+        LOG_INF("  FILE : %s Size : %dMB %sdeleted", filepath, fileSize, STORAGE.remove(filepath) ? "" : "not ");
+      }
       file = df.openNextFile();
     }
     // Remove the folder
-    if (df.isDirectory()) LOG_INF("Folder %s %sdeleted", deleteThis, STORAGE.rmdir(deleteThis) ? "" : "not ");
+    if (df.isDirectory()) LOG_ALT("Folder %s %sdeleted", deleteThis, STORAGE.rmdir(deleteThis) ? "" : "not ");
     else df.close();
-  } else LOG_INF("File %s %sdeleted", deleteThis, STORAGE.remove(deleteThis) ? "" : "not ");  //Remove the file
+  } else LOG_ALT("File %s %sdeleted", deleteThis, STORAGE.remove(deleteThis) ? "" : "not ");  //Remove the file
 }
