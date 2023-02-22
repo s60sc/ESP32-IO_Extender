@@ -27,8 +27,8 @@
         --itemBorder: silver; 
         --pageBackground: white;
         
-        /* font sizes */
-        --bodySize: 1rem; /* used as basis for other font sizes and padding */
+        /* element sizes */
+        --bodySize:1rem; /* used as basis for element, padding, and font sizes */
         --buttonSize: var(--bodySize);
         --buttonHalf: calc(var(--buttonSize) / 2);
         --buttonQuart: calc(var(--buttonSize) / 4);
@@ -407,11 +407,15 @@
         function initialise() {
           try {
             //addButtons();       
+            //addRangeData();
             setListeners();
             initWebSocket();
             loadStatus(""); 
             //if (hbTimer == null) setTimeout(refreshStatus, refreshInterval);
-          } catch (error) {showLog("Error: " + error.message);}
+          } catch (error) {
+            showLog("Error: " + error.message);
+            alert("Error: " + error.message);
+          }                              
         }              
       
         /*********** websocket functions ***********/
@@ -433,8 +437,7 @@
           if (ws.readyState !== 1) return;
           sendCmd("H");
           clearTimeout(hbTimer);
-          hbTimer = setTimeout(heartbeat, refreshInterval);
-          $('#alertText').innerHTML = "";       
+          hbTimer = setTimeout(heartbeat, refreshInterval);     
         }
       
         // connect to websocket server
@@ -466,14 +469,14 @@
           // event.codes:
           //   1006 if server not available, or another web page is already open
           //   1005 if closed from app
-          if (event.code == 1006) alert("Closed websocket as a newer connection was made, refresh browser page");
+          if (event.code == 1006) {} //alert("Closed websocket as a newer connection was made, refresh browser page");
           else if (event.code != 1005) initWebSocket(); // retry if any other reason
         }
       
         async function closeWS() {
           ws.send('K');
           await sleep(500);
-          ws.close();
+          if (ws != null) ws.close();
         }
         
         /*********** page layout functions ***********/
@@ -484,9 +487,10 @@
           $('#' + e.name).style.display = "inherit";
           $$('.tablinks').forEach(el => {el.classList.remove("active");});
           e.classList.add("active");
-          if (e.name == 'mainPage') show($('#main'));
-          else hide($('#main'));
-          $$('input[type=range]').forEach(el => {rangeMarker(el);});
+          try {
+            if (e.name == 'mainPage') show($('#main'));
+            else hide($('#main'));
+          } catch {}                   
         }
 
         function accordian(accId) {
@@ -496,14 +500,37 @@
           else panel.style.display = "inherit";
         }
 
-        function rangeMarker(range) {
-          const rangeVal = $('#'+range.id).parentElement.children.rangeVal;
+         function rangeSlider(el, isPos = true, statusVal = null) {
+          // update range slider marker position and value 
+          const rangeVal = el.parentElement.children.rangeVal;
+          if (statusVal != null) rangeVal.innerHTML = statusVal;
+          const currVal = isPos ? parseFloat(el.value) : parseFloat(rangeVal.innerHTML);
+          const minval = parseFloat(el.min);
+          const maxval = parseFloat(el.max);
+          const decPlaces = (el.step > 0 && el.step < 1) || el.step == 'any' ? 1 : 0;
+          if (el.classList.contains('logslider')) {
+            // range value is logarithmic
+            const minlog = Math.log(minval);
+            const maxlog = Math.log(maxval) ;
+            const scale = (maxlog - minlog) / (maxval - minval);
+            // if isPos then get value from slider positional change by user, else set slider position from initial value.
+            if (isPos) rangeVal.innerHTML = Math.exp((currVal - minval) * scale + minlog).toFixed(decPlaces);
+            else el.value = minval + ((currVal == 0 ? 0 : Math.log(currVal)) - minlog) / scale; 
+          } else rangeVal.innerHTML = parseFloat(el.value).toFixed(decPlaces);
+          
+          // position for range marker
           const rangeFontSize = parseInt(window.getComputedStyle($('input[type=range]')).fontSize); 
-          let position = (range.clientWidth - rangeFontSize) * (range.value - range.min) / (range.max - range.min);
-          position += range.offsetLeft + (rangeFontSize / 2);
-          rangeVal.innerHTML = '<span>'+range.value+'</span>';
+          let position = (el.clientWidth - rangeFontSize) * (el.value - minval) / (maxval - minval); 
+          position += el.offsetLeft + (rangeFontSize / 2);
           rangeVal.style.left = 'calc('+position+'px)';
-       }
+        }
+        
+        let observer = new IntersectionObserver ( function(entries) {
+          // recalc each range slider that becomes visible
+            entries.forEach(el => { if (el.isIntersecting === true) rangeSlider(el['target']); });
+          }, { threshold: [0] }
+        );
+        $$('input[type=range]').forEach(el => { observer.observe(el); });
         
         function addButtons() {
           // add commmon buttons to relevant sections
@@ -515,11 +542,20 @@
           });
         }
         
+        function addRangeData() {
+          // add labelling for rangle sliders
+          $$('input[type="range"]').forEach(el => {
+            if (!isDefined(el.parentElement.children.rangeMin)) el.insertAdjacentHTML("beforebegin", '<div name="rangeMin"/>'+el.min+'</div>');
+            el.insertAdjacentHTML("afterend", '<div name="rangeVal">'+el.value+'</div>');
+            if (!isDefined(el.parentElement.children.rangeMax)) el.insertAdjacentHTML("afterend", '<div name="rangeMax"/>'+el.max+'</div>');
+            rangeSlider(el, false);
+          });
+        }
+            
        /*********** data processing functions ***********/
       
         async function loadStatus(specifier) {
           // request and load current status from app
-          $$('input[type=range]').forEach(el => {rangeMarker(el);});
           const response = await fetch(baseHost+'/status'+specifier);
           if (response.ok) {
             updateData = await response.json();
@@ -545,10 +581,7 @@
             else if (eld) {if (eld.classList.contains('displayonly')) eld.innerHTML = value;} // display text 
             else if (eli != null) { // input fields
               if (eli.type === 'checkbox') eli.checked = !!Number(value);
-              else if (eli.type === 'range') {
-                eli.value = value; 
-                rangeMarker(eli); 
-              }
+              else if (eli.type === 'range') rangeSlider(eli, false, value); 
               else if (eli.type === 'option') eli.selected = true;
               else eli.value = value; 
             }
@@ -613,6 +646,16 @@
           return (typeof variable === 'undefined' || variable === null ) ? false : true;
         }
 
+        async function showAlert(value) {
+          $('#alertText').innerHTML = value;
+          await sleep(5000);
+          $('#alertText').innerHTML = "";
+        }
+        
+        function dbg(msg) {
+          console.log('***** '+msg);
+        }
+        
         /*********** command processing ***********/
       
        function setListeners() {
@@ -648,7 +691,7 @@
           
           // input events
           document.addEventListener("input", function (event) {
-            if (event.target.type === 'range') rangeMarker(event.target);
+            if (event.target.type === 'range') rangeSlider(event.target);
           });
           
           // user command entered on Log tab
@@ -661,13 +704,14 @@
           
           // recalc range marker positions 
           window.addEventListener('resize', function (event) {
-            $$('input[type=range]').forEach(el => {rangeMarker(el);});
+            $$('input[type=range]').forEach(el => { rangeSlider(el); });
           });
           
           // close web socket on leaving page
           window.addEventListener('beforeunload', function (event) {
             if (ws) closeWS();
-          });      
+          });
+          
         }
       
         function sendWsCmd() {
@@ -801,8 +845,15 @@
                       inputHtml += '" value="'+ saveVal +'"' + (saveVal == 1 ? ' checked' : '') + '>';
                       inputHtml += '<label class="slider" for="' + saveKey + '"></label></div>';
                     break;
-                    case 'R': // read only
+                    case 'D': // display only
                       inputHtml = '<input type="text" class="configItem" id="' + saveKey + '" value="'+ saveVal +'" readonly>';
+                    break;
+                    case 'R': // R:min:max:step
+                      // format number as range slider 
+                      const range = value.substring(2).split(":");
+                      inputHtml = '<div class="input-group">';
+                      inputHtml += '<input type="range" id="' + saveKey + '" min="' + range[0] + '" max="' + range[1];
+                      inputHtml += '" step="' + range[2] + '" value="' + saveVal + '"><div name="rangeVal">' + saveVal + '</div></div>';
                     break;
                     default:
                       console.log("Unhandled config input type " + value);
@@ -870,7 +921,7 @@
             if (key == "wifi") getConfig("0");
             else if (key == "hostName") document.title = value;
             else if (key == "otafile") otaUploadFile();
-            else if (key == "alertMsg") $('#alertText').innerHTML = value;
+            else if (key == "alertMsg") showAlert(value);
             else if (key == "clearWSlog") $('#applog').innerHTML = "";
             else if (key == "peripherals") getConfig("0123");                                                         
             else if (fromUser) sendControl(key, value); // remaining changes are passed thru to app
