@@ -20,8 +20,11 @@ Select the required module, eg `ESP32C3 Dev Module`.
 Compile with Partition Scheme: `Minimal SPIFFS (...)`. 
  The client app and IO Extender app must be compiled with the same version of the `peripherals.cpp` file.
 
-To load the app on the ESP32-C3FN4 for the first time, use a pin compatible ESP8266 Code Burner shown in image above, connecting the IO15 header to 3V3. Once the app is loaded, OTA can be used subsequently. The application web pages and configuration data file (except passwords) are stored in the **/data** folder on flash. On first use, the application will start in wifi AP mode to allow router and other details to be entered via the web page. If the **/data** folder is not present, it is downloaded from GitHub.
-Subsequent updates to the application, or to the **/data** folder contents, can be made using the **OTA Upload** button on the  web page. The **/data** folder can also be reloaded from GitHub using the **Reload /data** button on the web page.
+To load the app on the ESP32-C3FN4 for the first time, use a pin compatible ESP8266 Code Burner shown in image above, connecting the IO15 header to 3V3. 
+
+On first installation, the application will start in wifi AP mode - connect to SSID: **ESP_IO_Extender_...**, to allow router and password details to be entered via the web page on 192.168.4.1. The application web pages and configuration data file (except passwords) are stored in the **/data** folder which is automatically downloaded to flash from GitHub. The **/data** folder can also be loaded via OTA.
+
+Subsequent updates to the application, or to the **/data** folder contents, can be made using the **OTA Upload** tab. The **/data** folder can also be reloaded from GitHub using the **Reload /data** button on the **Edit Config** tab.
 
 Three connections need to be made with the client ESP32:
 * IO Extender TX to client RX
@@ -39,24 +42,26 @@ Browser functions only tested on Chrome.
 
 ## Configuration
 
-The IO Extender web page has the following buttons:
+The IO Extender web page has the following tabs:
 
-* **Monitor Log**: Opens web socket to view log messages dynamically.
+* **Show Log**: Opens web socket to view log messages dynamically.
 
 * **OTA Update**: Update application bin file or files in **/data** folder using OTA.
 
-* **Reboot ESP**: Restart the ESP to apply some configuration changes.
+* **Edit Config**:
 
-* **Clear NVS**: Clear current passwords.
+  * **Reboot ESP**: Restart the ESP to apply some configuration changes.
 
-* **Reload /data**: Reload data files from github.
+  * **Clear NVS**: Clear current passwords.
 
-* **Wifi**: WiFi and webserver settings.
+  * **Reload /data**: Reload data files from github.
 
-* **Peripherals**: Current peripherals are servos, PIR, Led lamp (PWM or WS2812), DS18B20 temperature sensor, voltage monitoring
-  * Set UART1 RX and TX pins.
-  * Enable / disable peripherals. DS18B20 needs `#define INCLUDE_DS18B20` uncommented in `peripherals.cpp`.
-  * Set pin numbers used by peripherals.
-  * Set any parameters for peripherals.
+  * **Wifi**: WiFi and webserver settings.
 
-* **Save**: Make configuration changes persist over ESP reboots.
+  * **Peripherals**: Current peripherals are servos, PIR, Led lamp (PWM or WS2812), DS18B20 temperature sensor, voltage monitoring
+      * Set UART1 RX and TX pins.
+      * Enable / disable peripherals. DS18B20 needs `#define INCLUDE_DS18B20` uncommented in `peripherals.cpp`.
+      * Set pin numbers used by peripherals.
+      * Set any parameters for peripherals.
+
+  * **Save**: Make configuration changes persist over ESP reboots.

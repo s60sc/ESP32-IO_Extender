@@ -14,7 +14,7 @@
 #define FLUSH_DELAY 0 // for debugging crashes
  
 #define APP_NAME "ESP_IO_Extender" // max 15 chars
-#define APP_VER "1.3"
+#define APP_VER "1.3.1"
 
 #define MAX_CLIENTS 2 // allowing too many concurrent web clients can cause errors
 #define DATA_DIR "/data"
@@ -37,7 +37,7 @@
 
 #define FILLSTAR "****************************************************************"
 #define DELIM '~'
-#define STORAGE LittleFS // use of SPIFFS, LIttleFS or SD_MMC
+#define STORAGE LittleFS // use of LIttleFS or SD_MMC
 #define RAMSIZE (1024 * 8) 
 #define CHUNKSIZE (1024 * 4)
 //#define INCLUDE_FTP 

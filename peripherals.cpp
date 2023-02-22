@@ -81,7 +81,7 @@ int voltDivider; // set battVoltageDivider value to be divisor of input voltage 
 int voltLow; // voltage level at which to send out email alert
 int voltInterval; // interval in minutes to check battery voltage
 
-void doIOextPing() {
+void doAppPing() {
   // called from pingSuccess() to check that IO_Extender is available
   if (useIOextender && !IS_IO_EXTENDER) {
     // client sends ping
@@ -91,7 +91,6 @@ void doIOextPing() {
     // extIOpinged set by setPeripheralResponse() from io extender
   }
 }
-
 
 // individual pin sensor / controller functions
 

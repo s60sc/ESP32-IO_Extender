@@ -15,6 +15,8 @@
 
 #include "appGlobals.h"
 
+static bool startedUp = false;
+
 void setup() {
   logSetup();
   startStorage();
@@ -33,10 +35,11 @@ void setup() {
     // start rest of services
     prepPeripherals();
     LOG_INF(APP_NAME " v" APP_VER " ready ...");
+    startedUp = true;
     checkMemory();
   }
 }
 
 void loop() {
-  getPeripheralsRequest();
+  if (startedUp) getPeripheralsRequest();
 }
