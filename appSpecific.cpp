@@ -5,12 +5,15 @@
 #include "appGlobals.h"
 
 
+/************************ webServer callbacks *************************/
 bool updateAppStatus(const char* variable, const char* value) {
   // update vars from browser input
   bool res = true; 
   int intVal = atoi(value);
+  float fltVal = atof(value);
   // peripherals
-  if(!strcmp(variable, "useIOextender")) useIOextender = (bool)intVal;
+  if (!strcmp(variable, "custom")) return res;
+  else if(!strcmp(variable, "useIOextender")) useIOextender = (bool)intVal;
   else if(!strcmp(variable, "useUART0")) useUART0 = (bool)intVal;
   else if(!strcmp(variable, "uartTxdPin")) uartTxdPin = intVal;
   else if(!strcmp(variable, "uartRxdPin")) uartRxdPin = intVal;
@@ -32,7 +35,7 @@ bool updateAppStatus(const char* variable, const char* value) {
   else if(!strcmp(variable, "servoMinPulseWidth")) servoMinPulseWidth = intVal;
   else if(!strcmp(variable, "servoMaxPulseWidth")) servoMaxPulseWidth = intVal;
   else if(!strcmp(variable, "voltDivider")) voltDivider = intVal;
-  else if(!strcmp(variable, "voltLow")) voltLow = intVal;
+  else if(!strcmp(variable, "voltLow")) voltLow = fltVal;
   else if(!strcmp(variable, "voltInterval")) voltInterval = intVal;
   return res;
 }
@@ -79,5 +82,8 @@ bool appDataFiles() {
   return true;
 }
 
-void OTAprereq() {} // dummy 
+void doAppPing() {
+  doIOExtPing();
+}
 
+void OTAprereq() {} 
