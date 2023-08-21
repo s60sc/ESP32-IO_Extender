@@ -226,7 +226,7 @@
         flex-grow: 1
       }
       
-      input, #applog, #ramlog {
+      input, #applog, #storedLog {
         font: var(--inputSize) 'Courier New';
         font-weight:bold;
         color: var(--inputText);
@@ -316,7 +316,7 @@
         transform: translateX(calc(var(--buttonSize)*1.5));
       }
       
-      #applog, #ramlog {
+      #applog, #storedLog {
         height:50vh;
         width:90%;
         border:2px solid var(--itemBorder);
@@ -421,18 +421,18 @@
         <div>
         <svg>
           <rect/>
-          <text class="midText" id="refreshRAMlog">Display RAM Log</text>
-        </svg>
+            <text class="midText" id="refreshLog">Refresh Log</text>
+          </svg>
         </div>
         <div>
-        <svg>
-          <rect/>
-          <text class="midText" id="clearRAMlog">Clear RAM Log</text>
-        </svg>
-      </div>
+          <svg>
+            <rect/>
+            <text class="midText" id="clearLog">Clear Log</text>
+          </svg>
+        </div>
       </div>
       <br>
-      <div id="ramlog"></div>
+      <div id="storedLog"></div>
     </div>
     <br>
     
@@ -526,8 +526,8 @@
           else if (key == "otafile") otaUploadFile();
           else if (key == "alertMsg") showAlert(value);
           else if (key == "clearWSlog") $('#applog').innerHTML = "";
-          else if (key == "clearRAMlog") clearRAMlog();
-          else if (key == "refreshRAMlog") getRAMlog();
+          else if (key == "clearLog") clearLog();
+          else if (key == "refreshLog") getLog();
           else if (key == "refreshVal") refreshInterval = value * 1000; 
           else if (key == "clockUTC") checkTime(value);
           else if (key == "peripherals") getConfig("0123");

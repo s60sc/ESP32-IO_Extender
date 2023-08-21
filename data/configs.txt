@@ -46,6 +46,7 @@ voltLow~3~99~N~Warning level for low voltage
 voltInterval~5~3~N~Voltage check interval (mins)
 voltPin~~3~N~ADC Pin used for battery voltage
 voltUse~0~3~C~Use Voltage check
-cfgVer~0~99~T~na
-htmVer~1~99~T~na
-jsVer~0~99~T~na
+usePing~1~0~C~Use ping
+cfgVer~1~99~T~na
+htmVer~2~99~T~na
+jsVer~1~99~T~na
