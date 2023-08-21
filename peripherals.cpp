@@ -414,6 +414,18 @@ void setLamp(uint8_t lampVal) {
 }
 
 
+void twinkleLed(uint8_t ledPin, uint16_t interval, uint8_t blinks) {
+  // twinkle led, for given number of blinks, 
+  //  with given interval in ms between blinks
+  bool ledState = true;
+  for (int i=0; i<blinks*2; i++) {
+    digitalWrite(ledPin, ledState);
+    delay(interval);
+    ledState = !ledState;
+  }
+}
+
+
 /********************* interact with UART **********************/
 
 void setPeripheralResponse(const byte pinNum, const uint32_t responseData) {

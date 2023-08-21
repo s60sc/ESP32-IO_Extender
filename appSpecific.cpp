@@ -86,4 +86,6 @@ void doAppPing() {
   doIOExtPing();
 }
 
-void OTAprereq() {} 
+void OTAprereq() {
+  stopPing();
+}

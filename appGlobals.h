@@ -22,7 +22,7 @@
 #define FLUSH_DELAY 200 // for debugging crashes
  
 #define APP_NAME "ESP_IO_Extender" // max 15 chars
-#define APP_VER "1.3.2"
+#define APP_VER "1.3.3"
 
 #define MAX_CLIENTS 2 // allowing too many concurrent web clients can cause errors
 #define INDEX_PAGE_PATH DATA_DIR "/IO_EXT" HTML_EXT
@@ -44,9 +44,9 @@
 #define EXTPIN 100
 
 // to determine if newer data files need to be loaded
-#define HTM_VER "1"
-#define JS_VER "0"
-#define CFG_VER "0"
+#define CFG_VER "1"
+#define HTM_VER "2"
+#define JS_VER "1"
 
 
 /******************** Function declarations *******************/
