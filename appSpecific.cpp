@@ -1,11 +1,16 @@
 // IO_Extender specific web & prefs functions
 //
-// s60sc 2022
+// s60sc 2022, 2024
 
 #include "appGlobals.h"
 
+const size_t prvtkey_len = 0;
+const size_t cacert_len = 0;
+const char* prvtkey_pem = "";
+const char* cacert_pem = "";
 
 /************************ webServer callbacks *************************/
+
 bool updateAppStatus(const char* variable, const char* value) {
   // update vars from browser input
   bool res = true; 
@@ -22,7 +27,6 @@ bool updateAppStatus(const char* variable, const char* value) {
   else if(!strcmp(variable, "lampAuto")) lampAuto = (bool)intVal;
   else if(!strcmp(variable, "servoUse")) servoUse = (bool)intVal;
   else if(!strcmp(variable, "voltUse")) voltUse = (bool)intVal; 
-  else if(!strcmp(variable, "micUse")) micUse = (bool)intVal;
   else if(!strcmp(variable, "pirPin")) pirPin = intVal;
   else if(!strcmp(variable, "lampPin")) lampPin = intVal;
   else if(!strcmp(variable, "servoPanPin")) servoPanPin = intVal;
@@ -40,26 +44,26 @@ bool updateAppStatus(const char* variable, const char* value) {
   return res;
 }
 
-void wsAppSpecificHandler(const char* wsMsg) {
+void appSpecificWsHandler(const char* wsMsg) {
   // message from web socket
   int wsLen = strlen(wsMsg) - 1;
   switch ((char)wsMsg[0]) {
-    case 'H': 
+    case 'H':
       // keepalive heartbeat, return status
     break;
-    case 'S': 
+    case 'S':
       // status request
-      buildJsonString(wsLen); // required config number 
+      buildJsonString(wsLen); // required config number
       logPrint("%s\n", jsonBuff);
-    break;   
-    case 'U': 
+    break;
+    case 'U':
       // update or control request
       memcpy(jsonBuff, wsMsg + 1, wsLen); // remove 'U'
       parseJson(wsLen);
     break;
-    case 'K': 
+    case 'K':
       // kill websocket connection
-      killWebSocket();
+      killSocket();
     break;
     default:
       LOG_WRN("unknown command %c", (char)wsMsg[0]);
@@ -73,12 +77,20 @@ void buildAppJsonString(bool filter) {
   *p = 0;
 }
 
-esp_err_t webAppSpecificHandler(httpd_req_t *req, const char* variable, const char* value) {
+esp_err_t appSpecificWebHandler(httpd_req_t *req, const char* variable, const char* value) {
   return ESP_OK;
 }
 
+esp_err_t appSpecificSustainHandler(httpd_req_t* req) {
+  return ESP_OK;
+}
+
+void externalAlert(const char* subject, const char* message) {
+  // alert any configured external servers
+}
+
 bool appDataFiles() {
-  // callback from setupAssist.cpp, for any app specific files 
+  // callback from setupAssist.cpp, for any app specific files
   return true;
 }
 
@@ -89,3 +101,55 @@ void doAppPing() {
 void OTAprereq() {
   stopPing();
 }
+
+/************** default app configuration **************/
+const char* appConfig = R"~(
+restart~~99~T~na
+ST_SSID~~0~T~Wifi SSID name
+ST_Pass~~0~T~Wifi SSID password
+ST_ip~~0~T~Static IP address
+ST_gw~~0~T~Router IP address
+ST_sn~255.255.255.0~0~T~Router subnet
+ST_ns1~~0~T~DNS server
+ST_ns2~~0~T~Alt DNS server
+AP_Pass~~0~T~AP Password
+AP_ip~~0~T~AP IP Address if not 192.168.4.1
+AP_sn~~0~T~AP subnet
+AP_gw~~0~T~AP gateway
+allowAP~1~0~C~Allow simultaneous AP
+useHttps~0~0~C~Use HTTPS
+useSecure~0~0~C~Validate server cert
+timezone~GMT0~0~T~Timezone string: tinyurl.com/TZstring
+logType~1~99~N~Output log selection
+Auth_Name~~0~T~Optional user name for web page login
+Auth_Pass~~0~T~Optional user name for web page password
+formatIfMountFailed~0~2~C~Format file system on failure
+wifiTimeoutSecs~30~0~N~WiFi connect timeout (secs)
+useUART0~0~3~C~Use UART0 for IO Extender
+uartTxdPin~~3~N~UART1 TX pin
+uartRxdPin~~3~N~UART1 RX pin
+pirUse~0~3~C~Use PIR for detection
+lampUse~0~3~C~Use lamp
+lampAuto~0~99~C~Lamp activated by PIR
+servoUse~0~3~C~Use servos
+micUse~0~99~C~Use microphone
+pirPin~~3~N~Pin used for PIR
+lampPin~~3~N~Pin used for Lamp
+servoPanPin~~3~N~Pin used for Pan Servo
+servoTiltPin~~3~N~Pin used for Tilt Servo
+ds18b20Pin~~3~N~Pin used for DS18B20 temperature sensor
+micSckPin~~99~N~Pin used for I2S microphone SCK 
+micWsPin~~99~N~Pin used for I2S microphone WS
+micSdPin~~99~N~Pin used for I2S microphone SD
+servoDelay~0~3~N~Delay between each 1 degree change (ms) 
+servoMinAngle~0~3~N~Set min angle for servo model
+servoMaxAngle~180~3~N~Set max angle for servo model
+servoMinPulseWidth~544~3~N~Set min pulse width for servo model (usecs)
+servoMaxPulseWidth~2400~3~N~Set max pulse width for servo model (usecs)
+voltDivider~2~3~N~Voltage divider resistor ratio
+voltLow~3~99~N~Warning level for low voltage
+voltInterval~5~3~N~Voltage check interval (mins)
+voltPin~~3~N~ADC Pin used for battery voltage
+voltUse~0~3~C~Use Voltage check
+usePing~1~0~C~Use ping
+)~";

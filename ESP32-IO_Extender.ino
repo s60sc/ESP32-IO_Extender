@@ -19,8 +19,8 @@ static bool startedUp = false;
 
 void setup() {
   logSetup();
-  startStorage();
-  loadConfig();
+  // prep SD card storage and Load saved user configuration
+  if (startStorage()) loadConfig();
 
 #ifdef DEV_ONLY
   devSetup();
@@ -34,7 +34,6 @@ void setup() {
   else {
     // start rest of services
     prepPeripherals();
-    LOG_INF(APP_NAME " v" APP_VER " ready ...");
     startedUp = true;
     checkMemory();
   }

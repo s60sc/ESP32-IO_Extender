@@ -21,9 +21,9 @@ Compile with Partition Scheme: `Minimal SPIFFS (...)`.
 
 To load the app on the ESP32-C3FN4 for the first time, use a pin compatible ESP8266 Code Burner shown in image above, connecting the IO15 header to 3V3. 
 
-On first installation, the application will start in wifi AP mode - connect to SSID: **ESP_IO_Extender_...**, to allow router and password details to be entered via the web page on 192.168.4.1. The application web pages and configuration data file (except passwords) are stored in the **/data** folder which is automatically downloaded to flash from GitHub. 
+On first installation, the application will start in wifi AP mode - connect to SSID: **ESP_IO_Extender_...**, to allow router and password details to be entered via the web page on 192.168.4.1. The configuration data file (except passwords) is automatically created, and the application web pages automatically downloaded from GitHub to the SD card **/data** folder when an internet connection is available. 
 
-Subsequent updates to the application, or to the **/data** folder contents, can be made using the **OTA Upload** tab. The **/data** folder can also be reloaded from GitHub using the **Reload /data** button on the **Edit Config** tab.
+Subsequent updates to the application, or to the **/data** folder contents, can be made using the **OTA Upload** tab. The **/data** folder can also be reloaded from GitHub using the **Reload /data** button on the **Edit Config** tab,  or by using a WebDAV client on `ip_address/webdav`.  
 
 Three connections need to be made with the client ESP32:
 * IO Extender TX to client RX
@@ -32,12 +32,12 @@ Three connections need to be made with the client ESP32:
 
 If flashing over serial to an ESP which has RX0 / TX0 connected to another ESP, disconnect or power off the other ESP, or use OTA.
 
-To use IO Extender in the client app eg [ESP32-MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD), then under the camera app **Peripherals** button:
-* Set `Use another ESP as IO Extender` to `1`
+To use IO Extender in the client app eg [ESP32-MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD), then under its **Peripherals** button:
+* Set `Use another ESP as IO Extender`
 * To identify that a pin on the IO Extender is to be used, add `100` to the IO Extender pin number, eg to use pin `5` on the IO Extender, enter `105`.
 * Enter pin numbers for `UART1 RX` and `UART1 TX`
 
-The ESP camera module has 3 UARTs, but due to a shortage of pins only pins 4, 12, 13, 33 are available for UART1 and local peripherals. To free up 2 pins, UART0 can be repurposed. In the camera app version of `peripherals.cpp` only, set `bool useUART0 = true;`. Use pin numbers 3 (RX0) and 1 (TX0) for `UART1 RX` and `UART1 TX` respectively.  
+The ESP camera module has 3 UARTs, but due to a shortage of pins only pins 4, 12, 33 are available for UART1 and local peripherals. To free up 2 pins, UART0 can be repurposed. Under the ESP32-MJPEG2SD **Peripherals** button, set `Use UART0 for IO Extender`. Use pin numbers 3 (RX0) and 1 (TX0) for `UART1 RX` and `UART1 TX` respectively.  
 Once the camera app has started up, its serial monitor is no longer available, but logging can be viewed via the web page.
 
 Browser functions only tested on Chrome.

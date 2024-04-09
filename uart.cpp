@@ -57,7 +57,7 @@ static bool readUart() {
         uart_get_buffered_data_len(uartId, (size_t*)&msgLen);
         delay(10);
       }
-      msgLen = uart_read_bytes(uartId, uartBuffRx, msgLen, 20 / portTICK_PERIOD_MS);
+      msgLen = uart_read_bytes(uartId, uartBuffRx, msgLen, pdMS_TO_TICKS(20));
       uint16_t* rxPtr = (uint16_t*)uartBuffRx;
       if (rxPtr[0] != header) {
         // ignore data that received from client when it reboots if using UART0
@@ -136,6 +136,7 @@ void uartClientTask(void *arg) {
   }
 }
 
+#if INCLUDE_UART
 bool externalPeripheral(byte pinNum, uint32_t outputData) {
   // used by client to communicate with external peripheral
   if (pinNum >= EXTPIN) {
@@ -153,11 +154,12 @@ bool externalPeripheral(byte pinNum, uint32_t outputData) {
   }
   return false;
 }
+#endif
 
 void getPeripheralsRequest() {
   // used by IO Extender to receive peripheral request from client
   if (uartQueue == NULL) {
-    LOG_ERR("Interface UART not defined");
+    LOG_WRN("Interface UART not defined");
     delay(30000); // allow time for user to rectify
   } else {
     if (readUart()) { 
@@ -182,7 +184,7 @@ void prepUart() {
       LOG_INF("Prepare IO Extender");
       responseMutex = xSemaphoreCreateMutex();
       writeMutex = xSemaphoreCreateMutex();
-      if (!IS_IO_EXTENDER) xTaskCreate(uartClientTask, "uartClientTask", 2048, NULL, 1, &uartClientHandle);
+      if (!IS_IO_EXTENDER) xTaskCreate(uartClientTask, "uartClientTask", UART_STACK_SIZE, NULL, UART_PRI, &uartClientHandle);
       else configureUart();
       xSemaphoreGive(responseMutex);
       xSemaphoreGive(writeMutex);
