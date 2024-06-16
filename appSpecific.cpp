@@ -44,10 +44,16 @@ bool updateAppStatus(const char* variable, const char* value) {
   return res;
 }
 
-void appSpecificWsHandler(const char* wsMsg) {
+void appSpecificWsBinHandler(uint8_t* wsMsg, size_t wsMsgLen) {
+  LOG_ERR("Unexpected websocket binary frame");
+}
+
+void appSpecificWsHandler(const char* wsMsg) { 
   // message from web socket
   int wsLen = strlen(wsMsg) - 1;
   switch ((char)wsMsg[0]) {
+    case 'X':
+    break;
     case 'H':
       // keepalive heartbeat, return status
     break;
@@ -100,6 +106,9 @@ void doAppPing() {
 
 void OTAprereq() {
   stopPing();
+}
+
+void stepperDone() {
 }
 
 /************** default app configuration **************/

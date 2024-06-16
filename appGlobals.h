@@ -26,7 +26,7 @@
 #define HOSTNAME_GRP 0
  
 #define APP_NAME "ESP_IO_Extender" // max 15 chars
-#define APP_VER "1.4"
+#define APP_VER "1.5"
 
 #define HTTP_CLIENTS 2 // http, ws
 #define MAX_STREAMS 0
@@ -84,11 +84,13 @@
 #define UART_STACK_SIZE (1024 * 2)
 
 // task priorities
+#define HTTP_PRI 5
 #define STICK_PRI 5
 #define TGRAM_PRI 1
 #define EMAIL_PRI 1
 #define FTP_PRI 1
 #define LOG_PRI 1
+#define DS18B20_PRI 1
 #define SERVO_PRI 1
 #define UART_PRI 1
 #define BATT_PRI 1
@@ -106,7 +108,7 @@ float readTemperature(bool isCelsius);
 void setCamPan(int panVal);
 void setCamTilt(int tiltVal);
 void setLamp(uint8_t lampVal);
-
+void stepperDone();
 
 /******************** Global app declarations *******************/
 
