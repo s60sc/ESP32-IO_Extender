@@ -15,8 +15,8 @@ External peripherals should have a low data rate and not a require a real time r
 ## Installation
 
 Download GitHub files into the Arduino IDE sketch folder, removing `-main` from the application folder name.
-Select the required boatd module, eg `ESP32C3 Dev Module`.
-Compile using arduino core v2.x or V3.x with Partition Scheme: `Minimal SPIFFS (...)`. 
+Select the required board module, eg `ESP32C3 Dev Module`.
+Compile using arduino core v2.x or V3.x (min v3.0.3) with Partition Scheme: `Minimal SPIFFS (...)`. 
  The client app and IO Extender app must be compiled with the same version of the `peripherals.cpp` file.
 
 To load the app on the ESP32-C3FN4 for the first time, use a pin compatible ESP8266 Code Burner shown in image above, connecting the IO15 header to 3V3. 

@@ -11,7 +11,7 @@ const char* cacert_pem = "";
 
 /************************ webServer callbacks *************************/
 
-bool updateAppStatus(const char* variable, const char* value) {
+bool updateAppStatus(const char* variable, const char* value, bool fromUser) {
   // update vars from browser input
   bool res = true; 
   int intVal = atoi(value);

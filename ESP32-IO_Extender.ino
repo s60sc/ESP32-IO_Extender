@@ -36,6 +36,7 @@ void setup() {
     prepPeripherals();
     startedUp = true;
     checkMemory();
+    LOG_INF("=============== Total tasks: %u ===============\n", uxTaskGetNumberOfTasks());
   }
 }
 
