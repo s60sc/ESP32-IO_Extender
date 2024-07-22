@@ -163,8 +163,9 @@
         ry: 15%;
       }
        
-      rect:active {
+      .buttonRect:focus {
         fill: var(--buttonActive);
+        outline: none; /* Remove focus outline if not needed */
       }
       
       rect:hover {
@@ -276,6 +277,9 @@
         opacity: 1
       }
       
+      input[type="button"]:focus {
+        background-color: var(--buttonActive);
+      }
       
       /* checkbox slider */
 
@@ -420,25 +424,25 @@
         <div style="grid-column: span 4"><br></div>
         <div>
           <svg>
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text class="local" id="refreshLog">Refresh Log</text>
           </svg>
         </div>
         <div>
           <svg>
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text class="local" id="clearLog">Clear Log</text>
           </svg>
         </div>
         <div>
           <svg>
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="save" class="midText">Save</text>
           </svg>
         </div>
         <div>
           <svg>
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="reset" class="midText">Reboot ESP</text>
           </svg>
         </div>
@@ -455,19 +459,19 @@
       <div class="grid-cols3">
         <div>
           <svg class="svgCols">
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="reset" class="midText">Reboot ESP</text>
           </svg>
         </div>
         <div>
           <svg class="svgCols">
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="deldata" class="midText">Reload /data</text>
           </svg>
         </div>
         <div>
           <svg class="svgCols">
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="clear" class="midText">Clear NVS</text>
           </svg>
         </div>
@@ -480,19 +484,19 @@
         </div>
         <div>
           <svg class="svgCols">
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="wifi" class="midText">Wifi</text>
           </svg>
         </div>
         <div>
           <svg class="svgCols">
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
             <text id="peripherals" class="midText">Peripherals</text>
           </svg>
         </div>
         <div>
           <svg class="svgCols">
-            <rect/>
+            <rect class="buttonRect" tabindex="0"/>
       	    <text id="save" class="midText">Save</text>
           </svg>
         </div>
