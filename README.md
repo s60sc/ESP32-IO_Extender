@@ -32,7 +32,7 @@ Three connections need to be made with the client ESP32:
 
 If flashing over serial to an ESP which has RX0 / TX0 connected to another ESP, disconnect or power off the other ESP, or use OTA.
 
-To use IO Extender in the client app eg [ESP32-MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD), then under its **Peripherals** button:
+To use IO Extender in the client app eg [ESP32-MJPEG2SD](https://github.com/s60sc/ESP32-CAM_MJPEG2SD/releases/tag/v9.9.4), then under its **Peripherals** button:
 * Set `Use another ESP as IO Extender`
 * To identify that a pin on the IO Extender is to be used, add `100` to the IO Extender pin number, eg to use pin `5` on the IO Extender, enter `105`.
 * Enter pin numbers for `UART1 RX` and `UART1 TX`
